@@ -1,4 +1,5 @@
 <?php
+	include 'config.php';
 	include 'data.inc.php';
 	$base = mysqli_connect(DB_HOST, DB_LOGIN, DB_PASSWORD, DB_NAME) or die(mysqli_error());
 	include 'lib.inc.php'; 
@@ -38,7 +39,23 @@
 
 	}
 
-	function LodLOG($db, $from, $to)
+	function LodShortLOG($db, $from, $to)
+	{
+		$sql ="SELECT messege,date,from_user FROM ((SELECT messege,date,from_user FROM messeges WHERE (from_user=$from AND to_user=$to) OR (from_user=$to AND to_user=$from) ORDER BY date  DESC LIMIT ".COUNT_MSG_PER_TIME." ) AS TB) ORDER BY date ASC" ;
+		// $sql = "SELECT messege,date,from_user FROM messeges WHERE (from_user=$from AND to_user=$to) OR (from_user=$to AND to_user=$from) ORDER BY date DESC LIMIT ".COUNT_MSG_PER_TIME;		
+		$arr = array();		
+		if ($result = mysqli_query($db, $sql)) {
+
+		   	while ($row = mysqli_fetch_assoc($result)) {
+			    array_push($arr, $row);
+			}
+
+		    mysqli_free_result($result);
+		}	
+		return json_encode($arr);	
+	}
+
+	function LodFullLOG($db, $from, $to)
 	{
 		$sql = "SELECT messege,date,from_user FROM messeges WHERE (from_user=$from AND to_user=$to) OR (from_user=$to AND to_user=$from) ORDER BY date";		
 		$arr = array();		
@@ -52,6 +69,8 @@
 		}	
 		return json_encode($arr);	
 	}
+
+
 
 	function SendMSG($db, $from, $to, $messege)
 	{
@@ -69,8 +88,16 @@
 		(isset($_POST['from']) && !empty($_POST['from'])) && 
 		(isset($_POST['to']) && !empty($_POST['to'])) )
 	{
-		echo LodLOG($base, $_POST['from'], $_POST['to']);
+		echo LodShortLOG($base, $_POST['from'], $_POST['to']);
 	}  
+
+	if ( (isset($_POST['getFullLog']) && ($_POST['getFullLog'] == 'true')) && 
+		(isset($_POST['from']) && !empty($_POST['from'])) && 
+		(isset($_POST['to']) && !empty($_POST['to'])) )
+	{
+		echo LodFullLOG($base, $_POST['from'], $_POST['to']);
+	} 
+
 
 	if ( (isset($_POST['message']) && !empty($_POST['message'])) && 
 		(isset($_POST['from']) && !empty($_POST['from'])) && 

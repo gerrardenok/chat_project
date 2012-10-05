@@ -13,11 +13,15 @@
 		$password = AddSatl(clearData($_POST['password']));
 		$email = clearData($_POST['email']);
 		if ( CheckUserData($base, $login, $password, $email) ) {
-			session_start();
-			$_SESSION['user_id'] = getID($base, $login, $password, $email);
-			$_SESSION['username'] = $login;
-			UserLogIN($base, $_SESSION['user_id']);
-			header("Location: chat.php");
+			if ( !CheckUserStatus($base, $login, $password, $email) ) {
+				session_start();
+				$_SESSION['user_id'] = getID($base, $login, $password, $email);
+				$_SESSION['username'] = $login;
+				UserLogIN($base, $_SESSION['user_id']);
+				header("Location: chat.php");
+			} else {
+				$error = '<b>User with this data is online.</b>';	
+			}
 		} else {
 			$error = '<b>User with this data doesn\'t  is exist.</b>';
 		}

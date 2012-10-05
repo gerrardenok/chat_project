@@ -26,6 +26,18 @@
 		return $obj[0];
 	}
 
+	function CheckUserStatus($db, $login, $password, $email)
+	{
+		$sql = "SELECT status FROM users WHERE (login='{$login}' AND password='{$password}' AND email='{$email}')";
+
+		if ($result = mysqli_query($db, $sql)) {
+
+		    $obj = mysqli_fetch_array($result);
+
+		    mysqli_free_result($result);
+		}
+		return $obj[0];
+	}
 
 
 	function getID($db, $login, $password, $email)

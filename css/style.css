@@ -1,0 +1,168 @@
+ /* CSS Document */
+body {
+	font:12px arial;
+	color: #222;
+	text-align:center;
+	padding:35px; }
+ 
+form, p, span {
+	margin:0;
+	padding:0; 
+}
+
+input { 
+	font:12px arial; 
+}
+
+form.form-table {
+	display: table;
+	width: 100%;
+}
+
+.form-td {
+	display: table-cell;
+}
+
+label.form-td {
+	width: 200px;
+	text-align: right;
+}  
+
+
+.row {
+	display: table-row;
+	text-align: left;
+}
+
+ 
+a {
+	color:#0000FF;
+	text-decoration:none; 
+}
+ 
+a:hover { 
+	text-decoration:underline; 
+}
+ 
+#wrapper, #loginform {
+	margin:0 auto;
+	position: relative;
+	padding-bottom:25px;
+	background:#EBF4FB;
+	width:504px;
+	border:1px solid #ACD8F0; 
+}
+ 
+#loginform { 
+	padding-top:18px; 
+}
+ 
+#loginform p { 
+	margin: 5px; 
+}
+ 
+#chatbox, #peoplebox {
+	text-align:left;
+	margin-bottom:25px;
+	padding:10px;
+	background:#fff;
+	border:1px solid #ACD8F0;
+	overflow: auto;
+	float: left;
+}
+ 
+#chatbox {
+	margin:5px 15px ;
+	height:270px;
+	width:330px;
+}
+
+#peoplebox {
+	margin:5px 10px 10px 0 ;
+	height:270px;
+	width:95px;
+	padding:10px 2px;
+}
+
+#usermsg {
+	width:415px;
+	border:1px solid #ACD8F0; 
+}	
+ 
+#submit { 
+	width: 60px; 
+}
+ 
+.error { 
+	color: #ff0000; 
+}
+ 
+#menu { 
+	padding:12.5px 25px 12.5px 25px; 
+}
+ 
+.welcome { 
+	float:left; 
+}
+ 
+.logout { 
+	float:right; 
+}
+ 
+.msgln { 
+	margin:0 0 2px 0; 
+}
+ 
+.user {
+	display: list-item;
+	padding:5px 2px;
+	padding-bottom: 2px;
+	font-weight: bold;
+	border-bottom: 1px solid #ACD8F0;
+	list-style-position: inside;
+	white-space: pre;
+	cursor: pointer;
+}
+
+.user:hover{
+	background-color: orange;
+}
+
+.online {
+	list-style-image: url(../images/online.png);
+}
+
+.offline {
+	list-style-image: url(../images/offline.png);
+}
+
+.passive {
+	background-color: white;
+}
+
+div.active {
+	background-color: orange;
+}
+
+p.exit {
+	text-align: right;
+}
+
+#error-messege {
+	display: none;
+	text-align: center;
+	color: #f00;
+	font-weight: bold;
+}
+
+.error {
+	background: url(../images/error.png) no-repeat right center;
+}
+.accept {
+	background: url(../images/accept.png) no-repeat right center;
+}
+
+.reg {
+	width: 140px;
+	padding-right:20px;
+}

@@ -1,9 +1,12 @@
 <?php
+	include 'config.php';
 	session_start();
 	if (!isset($_SESSION['user_id']) && !isset($_SESSION['username'])) {
 		header("Location: log_in.php");
 	}  
 	if(isset($_GET['logout'])){	
+		unset($_SESSION['user_id']);
+		unset($_SESSION['username']);
 		session_destroy();
 		header("Location: log_in.php"); 
 	}
@@ -21,9 +24,10 @@
 	var conversation_user_name;
 	var user_id = <?php echo json_encode($_SESSION['user_id']); ?>;
 	var username = <?php echo json_encode($_SESSION['username']); ?>;
+	var timeInterval = <?php echo "'".TIME_PER_CICLE."'" ?>;
 	function drawMessege (messege, from, time) {
 		if (from == convesetion_user_id) {
-			from = 'interlocutor';
+			from = convesetion_user_name;
 		} else if (from == user_id) {
 			from = 'ME'; 
 		}
@@ -40,9 +44,27 @@
 		}
 	}
 
+	function drawUser (user) {
+		var tmp = '';
+		if (user.id == convesetion_user_id) {
+			tmp = 'active';
+		}
+		if (user.status == 1) {
+			$('<div class="user online '+tmp+'" title="'+user.login+'" id="'+user.id+'">'+userShorterName(user.login)+'</div>').appendTo('#peoplebox');	
+		} else {
+			$('<div class="user offline '+tmp+'" title="'+user.login+'" id="'+user.id+'">'+userShorterName(user.login)+'</div>').appendTo('#peoplebox');
+		}
+	}
+
+	function drawUsers (users) {
+		for(i = 0; i < users.length; i++) {
+			drawUser(users[i]);
+		}
+	}
+
 
 	$(document).ready(function(){
-	
+	var timer;
 	goToServer("getUsers=true&id="+user_id, drawUsers ,'json');
 
 	$("#exit").click(function(){
@@ -53,49 +75,74 @@
 		}		
 	});
 
+	$("#Log").click(function(){
+		if (timer) {
+	    	clearInterval(timer);
+	    	timer = null;
+	    }
+	    if (convesetion_user_id) {
+			goToServer("getFullLog=true&from="+user_id+"&to="+convesetion_user_id, DrawMesseges ,'json');		
+		}
+	});
+
 	$('div.user').live('click', function() {
 		clearChatbox();		
 		convesetion_user_id = $(this).attr('id');
 		convesetion_user_name = $(this).html();
 		goToServer("getLog=true&from="+user_id+"&to="+convesetion_user_id, DrawMesseges ,'json');
-		$('div.user').css('background-color','white');
-	    $(this).css('background-color','orange');
+		$('div.user').removeClass('active');
+
+	    var tmp = $(this).attr('class');
+	    $(this).addClass(tmp+' '+'active');
+
+	    // устанавливаем обновление сообщений и юзеров
+	    if (timer) {
+	    	clearInterval(timer);
+	    	timer = null;
+	    }
+		timer = setInterval(function() {
+			clearChatbox();
+			clearUsers();
+			goToServer("getUsers=true&id="+user_id, drawUsers ,'json');
+			goToServer("getLog=true&from="+user_id+"&to="+convesetion_user_id, DrawMesseges ,'json');
+
+		}, timeInterval)
 	});
 
-	$("#submitmsg").click(function(){
-		drawMessege ( clearMessege( $('#usermsg').val()) , 'ME'  );
-		goToServer("message="+ clearMessege( $('#usermsg').val()) +"&from="+user_id+"&to="+convesetion_user_id );
-		// console.log("message="+ clearMessege( $('#usermsg').val()) +"&from="+user_id+"&to="+convesetion_user_id );
+	$("#submitmsg").click(function() {
+		if (convesetion_user_id) {
+			drawMessege ( clearMessege( $('#usermsg').val()) , 'ME'  );
+			goToServer("message="+ clearMessege( $('#usermsg').val()) +"&from="+user_id+"&to="+convesetion_user_id );
+			console.log("message="+ clearMessege( $('#usermsg').val()) +"&from="+user_id+"&to="+convesetion_user_id );
+		}
 		$('#usermsg').val('');
 	});
 
 	clearChatbox();
 	clearUsers();
 
-	// устанавливаем ообновление сообщений и юзеров
-	var timer = setInterval(function() {
-		clearChatbox();
-		clearUsers();
-		goToServer("getUsers=true&id="+user_id, drawUsers ,'json');
-		goToServer("getLog=true&from="+user_id+"&to="+convesetion_user_id, DrawMesseges ,'json');
-
-	}, 3000)
-
 	});
 
-	$(window).bind('beforeunload', function() {
-        var exit = confirm("Are you sure you want to end the session?");
-		if (exit==true) {
+	// -------------------- FACEPALM --------------
+	$(window).unload(function() { // работает только для обновления страницы (F5)
+	  	goToServer("exit=true&id="+user_id);
+		window.location = 'chat.php?logout=true';
+	});
+
+	$(window).bind('beforeunload', function() // работает только для закрытия вкладки
+        { 
+           	goToServer("exit=true&id="+user_id);
 			window.location = 'chat.php?logout=true';
-		}	    
-	});
+        } 
+    );
+	// ---------------------------------------------
 </script>
 </head>
 <body>
 	<div id="wrapper">
 		<div id="menu">
 			<p class="welcome">Welcome, <b><?php echo $_SESSION['username'] ?></b></p>
-			<p class="exit"><a href="#" id="exit">Exit</a> </p> 
+			<p class="exit"> <a href="#" id="Log">Log</a> &nbsp; <a href="#" id="exit">Exit</a> </p> 
 		</div>
 	<div>	
 		<div id="chatbox">

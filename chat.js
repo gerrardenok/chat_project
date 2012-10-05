@@ -29,13 +29,10 @@ function userShorterName (name) {
 function getCurrentTime() {
 	var date = new Date();
 	function formatDate(date) {
-	  var dd = date.getDate()
-	  if ( dd < 10 ) dd = '0' + dd;
-	  var mm = date.getMonth()+1
-	  if ( mm < 10 ) mm = '0' + mm;
-	  var yy = date.getFullYear() % 100;
-	  if ( yy < 10 ) yy = '0' + yy;
-	  return dd+'.'+mm+'.'+yy+' '+date.getHours()+':'+date.getMinutes();
+		var date = date.getUTCFullYear() + '-' + ('00' + (date.getUTCMonth()+1)).slice(-2) + 
+		'-' + '0' + date.getUTCDate() + ' ' + ('00' + date.getUTCHours()).slice(-2) + ':' + ('00' + date.getUTCMinutes()).slice(-2) + 
+		':' + ('00' + date.getUTCSeconds()).slice(-2);
+		return date;
 	}
 
 	return formatDate(date);
@@ -45,22 +42,32 @@ function clearChatbox (argument) {
 	$('#chatbox').empty();
 }
 
-function drawUser (user) {
-	if (user.status == 1) {
-		$('<div class="user online" title="'+user.login+'" id="'+user.id+'">'+userShorterName(user.login)+'</div>').appendTo('#peoplebox');	
-	} else {
-		$('<div class="user offline" title="'+user.login+'" id="'+user.id+'">'+userShorterName(user.login)+'</div>').appendTo('#peoplebox');
-	}
-}
+// function drawUser (user) {
+// 	if (user.status == 1) {
+// 		$('<div class="user online" title="'+user.login+'" id="'+user.id+'">'+userShorterName(user.login)+'</div>').appendTo('#peoplebox');	
+// 	} else {
+// 		$('<div class="user offline" title="'+user.login+'" id="'+user.id+'">'+userShorterName(user.login)+'</div>').appendTo('#peoplebox');
+// 	}
+// }
 
-function drawUsers (users) {
-	for(i = 0; i < users.length; i++) {
-		drawUser(users[i]);
-	}
-}
+// function drawUsers (users) {
+// 	for(i = 0; i < users.length; i++) {
+// 		drawUser(users[i]);
+// 	}
+// }
 
 function clearUsers() {
 	$('#peoplebox').empty();
+}
+
+function showActiveUser(id) {
+	var currentClass = $('#'+id).attr('class');
+	console.log(currentClass);
+	$('#'+id).addClass(currentClass+' '+'active');
+}
+
+function hideActiveUser(id) {
+	$('#'+id).removeClass('active');
 }
 
 
